@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kyabazinga College - Official Report Card</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #dadada;
+            font-family: 'Times New Roman', Times, serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .report-card {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            padding: 0.45in 0.4in 0.5in 0.4in;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            position: relative;
+            page-break-after: always;
+            break-inside: avoid;
+            margin: 0 auto 20px auto;
+        }
+
+        .watermark-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+            width: 280px;
+            text-align: center;
+        }
+        .watermark-badge img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Header: school info centered, badge on right */
+        .school-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+        .school-info {
+            flex: 1;
+            text-align: center;
+        }
+        .badge-box {
+            width: 90px;
+            height: 90px;
+            border: 1px solid #aaa;
+            background: #fefefe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .badge-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .school-name {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .school-address {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .school-motto {
+            font-size: 13px;
+            font-style: italic;
+            margin: 3px 0;
+        }
+        .school-contact {
+            font-size: 11px;
+        }
+        .school-email {
+            font-size: 10px;
+        }
+
+        .line-thin {
+            border-top: 1px solid #000;
+            margin: 6px 0 3px 0;
+        }
+        .line-thick {
+            border-top: 2.5px solid #000;
+            margin: 0 0 12px 0;
+        }
+
+        .student-row {
+            background: #f0f2f5;
+            padding: 8px 12px;
+            margin: 10px 0 16px 0;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 14px;
+            border-left: 4px solid #1e3a5f;
+            position: relative;
+            z-index: 2;
+        }
+        .student-item {
+            flex: 1;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin: 8px 0 12px 0;
+            position: relative;
+            z-index: 2;
+        }
+        .results-table th,
+        .results-table td {
+            border: 1px solid #111;
+            padding: 7px 5px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .results-table th {
+            background-color: #e3e3e3;
+            font-weight: 700;
+            font-size: 12.5px;
+        }
+        .subject-col {
+            font-weight: bold;
+            background-color: #fcf8e8;
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        .total-points {
+            text-align: right;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 6px 0 18px 0;
+            padding-right: 6px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .grading-section {
+            margin: 12px 0 20px 0;
+            position: relative;
+            z-index: 2;
+        }
+        .grading-title {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .grading-grid {
+            display: flex;
+            flex-wrap: wrap;
+            border: 1px solid #222;
+            font-size: 11px;
+        }
+        .grading-cell {
+            flex: 1;
+            text-align: center;
+            padding: 5px 2px;
+            border-right: 1px solid #222;
+            font-weight: bold;
+            background: #faf6e9;
+        }
+        .grading-cell:last-child {
+            border-right: none;
+        }
+        .grading-range {
+            font-weight: normal;
+            font-size: 9px;
+            display: block;
+        }
+
+        .remarks-block {
+            margin: 18px 0 14px 0;
+            position: relative;
+            z-index: 2;
+        }
+        .remark-line {
+            display: flex;
+            margin-bottom: 14px;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .remark-label {
+            width: 160px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .remark-value {
+            flex: 1;
+            border-bottom: 1px dotted #333;
+            min-height: 28px;
+            font-size: 13px;
+            padding-left: 6px;
+        }
+
+        .signature-block {
+            display: flex;
+            justify-content: space-between;
+            margin: 18px 0 12px 0;
+            align-items: flex-end;
+        }
+        .signature-item {
+            width: 45%;
+            text-align: center;
+        }
+        .signature-label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 100%;
+            margin-top: 28px;
+        }
+        .signature-img-area {
+            min-height: 55px;
+            margin-bottom: 4px;
+        }
+        .signature-img-area img {
+            max-height: 52px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+
+        .next-term-row {
+            font-weight: bold;
+            font-size: 13px;
+            margin: 12px 0 12px 0;
+        }
+
+        .footer-invalid {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 11px;
+            border-top: 1px solid #aaa;
+            padding-top: 10px;
+            letter-spacing: 0.3px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 999;
+        }
+        .action-bar button {
+            background: #1e3a6b;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .action-bar button.print-btn {
+            background: #2c5e2e;
+        }
+        .action-bar button:hover {
+            opacity: 0.85;
+        }
+
+        .selection-panel {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        .selection-panel label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .selection-panel select, .selection-panel input {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .selection-panel button {
+            background: #1e3a6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1 1 auto;
+        }
+        .selection-panel button.download-btn {
+            background: #2c5e2e;
+        }
+        .data-source-note {
+            font-size: 12px;
+            background: #eef4ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+            color: #1e3a5f;
+            text-align: center;
+        }
+
+        .preview-area {
+            background: #c0c6cc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+        }
+        .preview-header h3 {
+            color: #1e3a5f;
+        }
+        .preview-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #dadada;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        .close-preview {
+            background: #6c757d;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.2cm 1cm;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .report-card {
+                box-shadow: none;
+                padding: 0.2in 0.25in;
+                margin: 0 auto;
+                page-break-after: always;
+                page-break-inside: avoid;
+                width: 100%;
+                max-width: 100%;
+            }
+            .selection-panel, .preview-area, .action-bar, .button-group, .data-source-note, #previewArea, .preview-header, .close-preview {
+                display: none;
+            }
+            .watermark-badge {
+                opacity: 0.12;
+            }
+            .student-row {
+                background: #f0f2f5;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .grading-cell {
+                background: #faf6e9;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .results-table th {
+                background-color: #e3e3e3;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .results-table {
+                font-size: 11px;
+            }
+            .results-table td, .results-table th {
+                padding: 5px 3px;
+            }
+            .school-name {
+                font-size: 22px;
+            }
+            .student-row {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="selection-panel">
+        <h3>📋 Generate Report Cards</h3>
+        <label>🎓 Select Class</label>
+        <select id="classSelect"></select>
+        <label>📅 Next term begins on</label>
+        <input type="text" id="nextTerm" value="10th February 2026">
+        <div class="button-group">
+            <button id="viewBtn">👁️ View Reports</button>
+            <button id="downloadBtn" class="download-btn">📄 Download Reports</button>
+        </div>
+        <div class="data-source-note">
+            📌 Data source: <strong>general-mark-list.html</strong><br>
+            This report card reads students, subjects & marks from your browser's local storage.<br>
+            Head teacher's and class teacher's remarks are generated automatically based on performance.
+        </div>
+    </div>
+
+    <div id="previewArea" class="preview-area" style="display: none;">
+        <div class="preview-header">
+            <h3>📄 Report Cards Preview (A4 optimized)</h3>
+            <button id="closePreviewBtn" class="close-preview">✖️ Close</button>
+        </div>
+        <div id="previewContainer" class="preview-container"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- Storage Keys ----------
+    const STUDENTS_KEY = 'bim_students';
+    const MARKS_KEY = 'bim_subject_marks';
+    const SUBJECTS_KEY = 'bim_subjects';
+    const ASSETS_KEY = 'bim_budget_staff';
+
+    let allStudents = [];
+    let allMarks = [];
+    let allSubjects = [];
+    let schoolBadge = null;
+    let headSignature = null;
+
+    const classSelect = document.getElementById('classSelect');
+    const nextTermInput = document.getElementById('nextTerm');
+    const viewBtn = document.getElementById('viewBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const previewArea = document.getElementById('previewArea');
+    const previewContainer = document.getElementById('previewContainer');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+
+    function loadData() {
+        allStudents = JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]');
+        allMarks = JSON.parse(localStorage.getItem(MARKS_KEY) || '[]');
+        allSubjects = JSON.parse(localStorage.getItem(SUBJECTS_KEY) || '[]');
+        const assets = JSON.parse(localStorage.getItem(ASSETS_KEY) || '{}');
+        schoolBadge = assets.badgePhoto || null;
+        headSignature = assets.signaturePhoto || null;
+        
+        if (allStudents.length === 0) {
+            const hint = document.createElement('div');
+            hint.style.background = "#ffe0b5";
+            hint.style.padding = "10px";
+            hint.style.borderRadius = "12px";
+            hint.style.marginTop = "12px";
+            hint.style.fontSize = "13px";
+            hint.innerHTML = "⚠️ No student data detected. Please go to <strong>general-mark-list.html</strong> and add students, subjects & marks first.";
+            document.querySelector('.selection-panel').appendChild(hint);
+            setTimeout(() => hint.remove(), 6000);
+        }
+        populateClassSelect();
+    }
+
+    function populateClassSelect() {
+        const classes = [...new Set(allStudents.map(s => s.className).filter(c => c && c.trim()))];
+        classSelect.innerHTML = '<option value="">-- Choose Class --</option>';
+        classes.forEach(cls => {
+            const opt = document.createElement('option');
+            opt.value = cls;
+            opt.textContent = cls;
+            classSelect.appendChild(opt);
+        });
+        if (classes.length === 0) classSelect.innerHTML = '<option value="">No classes found (add from general-mark-list.html)</option>';
+    }
+
+    function getSubjectPapers(subjectName) {
+        const sub = allSubjects.find(s => s.name === subjectName);
+        return sub?.papers || [];
+    }
+
+    function getPaperMark(studentId, subject, paperName) {
+        const entry = allMarks.find(m => m.studentId === studentId && m.subject === subject && m.year === "2026" && m.term === "ONE");
+        if (!entry || !entry.paperMarks) return null;
+        const papers = getSubjectPapers(subject);
+        const idx = papers.indexOf(paperName);
+        if (idx === -1) return null;
+        const val = entry.paperMarks[idx];
+        return (val !== undefined && val !== null) ? Number(val) : null;
+    }
+
+    function getPaperGradeFromScore(score) {
+        if (score === null || isNaN(score)) return "";
+        if (score >= 80) return "D1";
+        if (score >= 75) return "D2";
+        if (score >= 66) return "C3";
+        if (score >= 60) return "C4";
+        if (score >= 55) return "C5";
+        if (score >= 50) return "C6";
+        if (score >= 45) return "P7";
+        if (score >= 40) return "P8";
+        return "F";
+    }
+
+    function gradeToNumber(grade) {
+        const map = { "D1": 1, "D2": 2, "C3": 3, "C4": 4, "C5": 5, "C6": 6, "P7": 7, "P8": 8, "F": 9 };
+        return map[grade] || 99;
+    }
+
+    function getSubjectGrade2Papers(grade1, grade2) {
+        const g1 = gradeToNumber(grade1);
+        const g2 = gradeToNumber(grade2);
+        const lowest = Math.max(g1, g2);
+        if (g1 <= 2 && g2 <= 2) return "A";
+        if (lowest <= 3) return "B";
+        if (lowest <= 4) return "C";
+        if (lowest <= 5) return "D";
+        if (lowest <= 6) return "E";
+        const hasPass = (g1 === 7 || g1 === 8 || g2 === 7 || g2 === 8);
+        const notFail = !(g1 === 9 && g2 === 9);
+        if (hasPass && notFail) return "O";
+        return "F";
+    }
+
+    function getSubjectGrade3Papers(gradesArray) {
+        const nums = gradesArray.map(g => gradeToNumber(g)).sort((a,b) => a - b);
+        const bestTwo = nums.slice(0, 2);
+        const lowestOfBest = Math.max(bestTwo[0], bestTwo[1]);
+        if (lowestOfBest <= 2) return "A";
+        if (lowestOfBest <= 3) return "B";
+        if (lowestOfBest <= 4) return "C";
+        if (lowestOfBest <= 5) return "D";
+        if (lowestOfBest <= 6) return "E";
+        const hasPass = bestTwo.some(n => n === 7 || n === 8);
+        const bothFail = bestTwo[0] >= 8 && bestTwo[1] >= 8;
+        if (hasPass && !bothFail) return "O";
+        return "F";
+    }
+
+    // Points mapping (A=6, B=5, C=4, D=3, E=2, O=1, F=0)
+    function getPointsFromSubjectGrade(grade) {
+        const map = { "A": 6, "B": 5, "C": 4, "D": 3, "E": 2, "O": 1, "F": 0 };
+        return map[grade] || 0;
+    }
+
+    // Helper to compute performance data for a student
+    function getPerformanceData(student) {
+        const studentSubjects = student.subjects || [];
+        let totalPapers = 0, presentPapers = 0, sumScores = 0;
+        for (const subj of studentSubjects) {
+            const papers = getSubjectPapers(subj);
+            totalPapers += papers.length;
+            for (const paper of papers) {
+                const mark = getPaperMark(student.id, subj, paper);
+                if (mark !== null && !isNaN(mark)) {
+                    presentPapers++;
+                    sumScores += mark;
+                }
+            }
+        }
+        const missingCount = totalPapers - presentPapers;
+        const avgScore = presentPapers > 0 ? sumScores / presentPapers : 0;
+        const avgScore20 = avgScore / 5;
+        let scoreRange = '';
+        if (avgScore20 >= 17) scoreRange = '17–20';
+        else if (avgScore20 >= 13) scoreRange = '13–16';
+        else if (avgScore20 >= 9) scoreRange = '9–12';
+        else if (avgScore20 >= 5) scoreRange = '5–8';
+        else scoreRange = '0–4';
+
+        let missingCategory = '';
+        if (missingCount === 0) missingCategory = 'all_done';
+        else if (missingCount <= 2) missingCategory = 'missing_1_2';
+        else missingCategory = 'missing_more';
+
+        return { missingCategory, scoreRange, avgScore20 };
+    }
+
+    // Class teacher remarks (second guide)
+    function getClassTeacherRemark(missingCategory, scoreRange) {
+        const remarks = {
+            all_done: {
+                '17–20': 'You have performed excellently in all subjects. Keep maintaining this high standard.',
+                '13–16': 'You have performed well in all subjects. Put in more effort to reach excellence.',
+                '9–12': 'You have shown a fair understanding. You can do better with more effort and revision.',
+                '5–8': 'Your performance is below expectations. You need to work harder and stay focused.',
+                '0–4': 'Your performance is very weak. You must take your studies more seriously.'
+            },
+            missing_1_2: {
+                '17–20': 'You performed very well in the papers you attempted, but you missed some papers. Ensure you sit all papers next time.',
+                '13–16': 'You did well in some papers, but missing others has affected your results. Be more consistent.',
+                '9–12': 'You showed some understanding, but missing papers has limited your performance. You need to be more serious.',
+                '5–8': 'Your performance is weak, and missing papers has made it worse. You must work harder and attend all exams.',
+                '0–4': 'Your performance is very low, and you missed some papers. You must take responsibility and improve.'
+            },
+            missing_more: {
+                '17–20': 'You did well in the few papers you attempted, but you missed many papers. Make sure you attend all exams.',
+                '13–16': 'You have some ability, but missing many papers has affected your results. You need to be more committed.',
+                '9–12': 'Your performance is limited because you missed many papers. You must improve your attendance and effort.',
+                '5–8': 'Your performance is poor, and missing many papers shows a lack of seriousness. You need to change your attitude.',
+                '0–4': 'Your performance is very poor, and you missed many papers. You must take your studies seriously and attend all exams.'
+            }
+        };
+        return remarks[missingCategory]?.[scoreRange] || 'Performance could not be evaluated.';
+    }
+
+    // Head teacher remarks (first guide)
+    function getHeadTeacherRemark(missingCategory, scoreRange) {
+        const remarks = {
+            all_done: {
+                '17–20': 'Excellent performance. Keep striving for greater heights.',
+                '13–16': 'Good performance. Aim higher with more effort.',
+                '9–12': 'Fair performance. More effort is required.',
+                '5–8': 'Performance is below expectations. Work harder.',
+                '0–4': 'Very poor performance. Immediate improvement is required.'
+            },
+            missing_1_2: {
+                '17–20': 'Good performance, though incomplete due to missed papers. Ensure full participation.',
+                '13–16': 'Fair performance affected by missing papers. Be more consistent.',
+                '9–12': 'Average performance with incomplete assessment. More seriousness is needed.',
+                '5–8': 'Low performance and missed papers. Improvement and responsibility required.',
+                '0–4': 'Very weak performance with missed papers. Must improve attendance and effort.'
+            },
+            missing_more: {
+                '17–20': 'Performance noted but incomplete due to many missed papers. Full participation is required.',
+                '13–16': 'Some effort shown, but results affected by absence. Greater commitment needed.',
+                '9–12': 'Limited assessment due to absenteeism. Improvement required.',
+                '5–8': 'Poor performance and irregular attendance. Must improve discipline.',
+                '0–4': 'No meaningful assessment due to absenteeism. Immediate change is required.'
+            }
+        };
+        // Add alternative variations? Use first one for simplicity.
+        return remarks[missingCategory]?.[scoreRange] || 'Performance could not be evaluated.';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    function generateReportCardHTML(student, nextTerm) {
+        const studentSubjects = student.subjects || [];
+        let totalPoints = 0;
+        let tableRows = '';
+
+        for (const subjName of studentSubjects) {
+            const papers = getSubjectPapers(subjName);
+            if (papers.length === 0) continue;
+            const paperScores = papers.map(p => getPaperMark(student.id, subjName, p));
+            const paperGrades = paperScores.map(s => getPaperGradeFromScore(s));
+            
+            let subjectGrade = '';
+            if (papers.length === 2) {
+                subjectGrade = getSubjectGrade2Papers(paperGrades[0], paperGrades[1]);
+            } else {
+                subjectGrade = getSubjectGrade3Papers(paperGrades);
+            }
+            totalPoints += getPointsFromSubjectGrade(subjectGrade);
+            
+            for (let i = 0; i < papers.length; i++) {
+                const score = paperScores[i] !== null ? paperScores[i] : '-';
+                const paperGrade = paperGrades[i];
+                if (i === 0) {
+                    tableRows += `<tr>
+                        <td class="subject-col" rowspan="${papers.length}">${escapeHtml(subjName)}</td>
+                        <td>${escapeHtml(papers[i])}</td>
+                        <td>${score === '-' ? '-' : score}</td>
+                        <td>${escapeHtml(paperGrade)}</td>
+                        <td rowspan="${papers.length}">${escapeHtml(subjectGrade)}</td>
+                        <td rowspan="${papers.length}">—</td>
+                        <td rowspan="${papers.length}">—</td>
+                    </tr>`;
+                } else {
+                    tableRows += `<tr>
+                        <td>${escapeHtml(papers[i])}</td>
+                        <td>${score === '-' ? '-' : score}</td>
+                        <td>${escapeHtml(paperGrade)}</td>
+                        <td>—</td>
+                        <td>—</td>
+                    </tr>`;
+                }
+            }
+        }
+        if (tableRows === '') {
+            tableRows = `<tr><td colspan="7">No subjects/papers assigned for this student. (Add subjects in general-mark-list.html)</td>`;
+        }
+
+        const perf = getPerformanceData(student);
+        const classRemark = getClassTeacherRemark(perf.missingCategory, perf.scoreRange);
+        const headRemark = getHeadTeacherRemark(perf.missingCategory, perf.scoreRange);
+
+        const watermarkHtml = schoolBadge ? `<div class="watermark-badge"><img src="${schoolBadge}" alt="watermark"></div>` : '<div class="watermark-badge"></div>';
+        const badgeTopHtml = schoolBadge ? `<img src="${schoolBadge}" alt="badge">` : '<div style="font-size: 11px;">Badge</div>';
+        const signatureHtml = headSignature ? `<img src="${headSignature}" alt="Head Teacher Signature">` : '<span style="font-size: 11px;">(upload signature)</span>';
+
+        return `
+        <div class="report-card">
+            ${watermarkHtml}
+            <div class="school-header-row">
+                <div class="school-info">
+                    <div class="school-name">KYABAZINGA COLLEGE</div>
+                    <div class="school-address">P.O. BOX 256, KAMULI</div>
+                    <div class="school-motto">Educated and Cultured</div>
+                    <div class="school-contact">Tel: 0779560930 / 0701061902 / 0756678814</div>
+                    <div class="school-email">Email: kyabazingacollegekml@gmail.com</div>
+                </div>
+                <div class="badge-box">${badgeTopHtml}</div>
+            </div>
+            <div class="line-thin"></div>
+            <div class="line-thick"></div>
+            <div class="student-row">
+                <div class="student-item">NAME: ${escapeHtml(student.name)}</div>
+                <div class="student-item">CLASS: ${escapeHtml(student.className || '-')}</div>
+                <div class="student-item">COMBINATION: ${escapeHtml(student.combination || '-')}</div>
+            </div>
+            <table class="results-table">
+                <thead>
+                    <tr><th>SUBJECT</th><th>PAPER</th><th>SCORE</th><th>PAPER GRADE</th><th>SUBJECT GRADE</th><th>COMMENT</th><th>INITIAL</th></tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            <div class="total-points"><strong>TOTAL POINTS: ${totalPoints}</strong></div>
+            <div class="grading-section">
+                <div class="grading-title">GRADING SYSTEM</div>
+                <div class="grading-grid">
+                    <div class="grading-cell">F<br><span class="grading-range">0 – 39</span></div>
+                    <div class="grading-cell">P8<br><span class="grading-range">40 – 44</span></div>
+                    <div class="grading-cell">P7<br><span class="grading-range">45 – 49</span></div>
+                    <div class="grading-cell">C6<br><span class="grading-range">50 – 54</span></div>
+                    <div class="grading-cell">C5<br><span class="grading-range">55 – 59</span></div>
+                    <div class="grading-cell">C4<br><span class="grading-range">60 – 65</span></div>
+                    <div class="grading-cell">C3<br><span class="grading-range">66 – 74</span></div>
+                    <div class="grading-cell">D2<br><span class="grading-range">75 – 79</span></div>
+                    <div class="grading-cell">D1<br><span class="grading-range">80 +</span></div>
+                </div>
+            </div>
+            <div class="remarks-block">
+                <div class="remark-line"><div class="remark-label">Class teacher's remarks:</div><div class="remark-value">${escapeHtml(classRemark)}</div></div>
+                <div class="remark-line"><div class="remark-label">Head teacher's remarks:</div><div class="remark-value">${escapeHtml(headRemark)}</div></div>
+            </div>
+            <div class="signature-block">
+                <div class="signature-item">
+                    <div class="signature-label">Class teacher's signature</div>
+                    <div class="signature-img-area"></div>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature-item">
+                    <div class="signature-label">Head teacher's signature</div>
+                    <div class="signature-img-area">${signatureHtml}</div>
+                    <div class="signature-line"></div>
+                </div>
+            </div>
+            <div class="next-term-row">Next term begins on: ${escapeHtml(nextTerm)}</div>
+            <div class="footer-invalid">This report is invalid, without school stamp</div>
+        </div>`;
+    }
+
+    function getReportsHTML() {
+        const selectedClass = classSelect.value;
+        if (!selectedClass) {
+            alert('Please select a class.');
+            return null;
+        }
+        const classStudents = allStudents.filter(s => s.className === selectedClass);
+        if (classStudents.length === 0) {
+            alert(`No students found in ${selectedClass}. Make sure you have added students and marks using general-mark-list.html.`);
+            return null;
+        }
+        // Attach subject list to each student
+        classStudents.forEach(s => s.subjects = allSubjects.map(sub => sub.name));
+        const nextTerm = nextTermInput.value || 'To be announced';
+        let allReportsHtml = '';
+        for (const student of classStudents) {
+            allReportsHtml += generateReportCardHTML(student, nextTerm);
+        }
+        return { html: allReportsHtml, className: selectedClass };
+    }
+
+    function viewReports() {
+        const result = getReportsHTML();
+        if (!result) return;
+        previewContainer.innerHTML = result.html;
+        previewArea.style.display = 'block';
+        previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function downloadReports() {
+        const result = getReportsHTML();
+        if (!result) return;
+        const fullHtmlContent = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Report Cards - ${result.className} - Kyabazinga College</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Times New Roman', Times, serif; background: white; }
+                .report-card { max-width: 1200px; width: 100%; background: white; padding: 0.45in 0.4in 0.5in 0.4in; position: relative; page-break-after: always; margin: 0 auto; }
+                @media print {
+                    @page { size: A4; margin: 1.2cm 1cm; }
+                    body { margin: 0; padding: 0; }
+                    .report-card { margin: 0; page-break-after: always; padding: 0.2in 0.25in; }
+                    .student-row { background: #f0f2f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .grading-cell { background: #faf6e9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .results-table th { background: #e3e3e3; }
+                }
+                .watermark-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.08; z-index: 0; width: 280px; text-align: center; }
+                .watermark-badge img { max-width: 100%; }
+                .school-header-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+                    position: relative;
+                    z-index: 2;
+                    flex-wrap: wrap;
+                }
+                .school-info {
+                    flex: 1;
+                    text-align: center;
+                }
+                .badge-box { width: 90px; height: 90px; border: 1px solid #aaa; background: #fefefe; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+                .badge-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+                .school-name { font-size: 26px; font-weight: 800; }
+                .school-address { font-size: 12px; margin-top: 4px; }
+                .school-motto { font-size: 13px; font-style: italic; margin: 3px 0; }
+                .school-contact { font-size: 11px; }
+                .school-email { font-size: 10px; }
+                .line-thin { border-top: 1px solid #000; margin: 6px 0 3px; }
+                .line-thick { border-top: 2.5px solid #000; margin: 0 0 12px; }
+                .student-row { background: #f0f2f5; padding: 8px 12px; margin: 10px 0 16px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; border-left: 4px solid #1e3a5f; }
+                .results-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0 12px; }
+                .results-table th, .results-table td { border: 1px solid #111; padding: 7px 5px; text-align: center; vertical-align: middle; }
+                .results-table th { background-color: #e3e3e3; }
+                .subject-col { font-weight: bold; background-color: #fcf8e8; text-align: left; padding-left: 8px; }
+                .total-points { text-align: right; font-weight: bold; font-size: 14px; margin: 6px 0 18px; padding-right: 6px; }
+                .grading-section { margin: 12px 0 20px; }
+                .grading-title { font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+                .grading-grid { display: flex; flex-wrap: wrap; border: 1px solid #222; font-size: 11px; }
+                .grading-cell { flex: 1; text-align: center; padding: 5px 2px; border-right: 1px solid #222; font-weight: bold; background: #faf6e9; }
+                .grading-range { font-weight: normal; font-size: 9px; display: block; }
+                .remarks-block { margin: 18px 0 14px; }
+                .remark-line { display: flex; margin-bottom: 14px; align-items: baseline; flex-wrap: wrap; }
+                .remark-label { width: 160px; font-weight: bold; font-size: 13px; }
+                .remark-value { flex: 1; border-bottom: 1px dotted #333; min-height: 28px; font-size: 13px; padding-left: 6px; }
+                .signature-block { display: flex; justify-content: space-between; margin: 18px 0 12px; align-items: flex-end; }
+                .signature-item { width: 45%; text-align: center; }
+                .signature-label { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+                .signature-line { border-top: 1px solid #000; width: 100%; margin-top: 28px; }
+                .signature-img-area { min-height: 55px; margin-bottom: 4px; }
+                .signature-img-area img { max-height: 52px; max-width: 150px; object-fit: contain; }
+                .next-term-row { font-weight: bold; font-size: 13px; margin: 12px 0; }
+                .footer-invalid { text-align: center; font-weight: bold; margin-top: 20px; font-size: 11px; border-top: 1px solid #aaa; padding-top: 10px; }
+            </style>
+        </head>
+        <body>
+            ${result.html}
+        </body>
+        </html>`;
+
+        const blob = new Blob([fullHtmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+        downloadLink.href = url;
+        downloadLink.download = `Kyabazinga_Reports_${result.className}_${timestamp}.html`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+        
+        alert(`✅ Reports for ${result.className} have been downloaded.`);
+    }
+
+    viewBtn.addEventListener('click', viewReports);
+    downloadBtn.addEventListener('click', downloadReports);
+    closePreviewBtn.addEventListener('click', () => {
+        previewArea.style.display = 'none';
+        previewContainer.innerHTML = '';
+    });
+
+    loadData();
+</script>
+</body>
+</html>
