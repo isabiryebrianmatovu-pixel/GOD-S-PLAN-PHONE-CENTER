@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Upload School Assets | BIM Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0a2540;
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i { margin-right: 6px; }
+        .back-link:hover { background: rgba(44, 110, 158, 0.2); transform: translateY(-2px); }
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1f4e79;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cfdfed;
+            border-radius: 1rem;
+            background: white;
+        }
+        .preview {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+        .preview img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            background: white;
+        }
+        .btn-primary {
+            background: #1f4e79;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: #0f3b5e; transform: translateY(-2px); }
+        .btn-secondary {
+            background: #eef2f9;
+            border: 1px solid #cbdde9;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .status {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            background: #e6f4ea;
+            color: #1e4a2f;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #1f2e3e;
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 35, 50, 0.92);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-upload"></i> UPLOAD SCHOOL ASSETS</h1>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+        <div class="form-group">
+            <label><i class="fas fa-school"></i> School Badge (photo)</label>
+            <input type="file" id="badgeInput" accept="image/*">
+            <div id="badgePreview" class="preview"></div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-signature"></i> Head Teacher's Signature (photo)</label>
+            <input type="file" id="signatureInput" accept="image/*">
+            <div id="signaturePreview" class="preview"></div>
+        </div>
+
+        <button id="saveBtn" class="btn-primary"><i class="fas fa-save"></i> Save Images</button>
+        <div id="statusMsg" class="status" style="display: none;"></div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
+
+<script>
+    // Storage key (same as used in staff.html and reports.html)
+    const ASSETS_KEY = 'bim_budget_staff';
+
+    // DOM elements
+    const badgeInput = document.getElementById('badgeInput');
+    const signatureInput = document.getElementById('signatureInput');
+    const badgePreview = document.getElementById('badgePreview');
+    const signaturePreview = document.getElementById('signaturePreview');
+    const saveBtn = document.getElementById('saveBtn');
+    const statusDiv = document.getElementById('statusMsg');
+
+    // Toast
+    const toastEl = document.getElementById('toastMsg');
+    const toastTextSpan = document.getElementById('toastText');
+    function showToast(msg, isError = false) {
+        toastTextSpan.innerText = msg;
+        toastEl.classList.add('show');
+        const icon = toastEl.querySelector('i');
+        icon.className = isError ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+        setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    // Load existing images from localStorage and show previews
+    function loadExisting() {
+        const stored = localStorage.getItem(ASSETS_KEY);
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.badgePhoto) {
+                badgePreview.innerHTML = `<img src="${data.badgePhoto}" alt="School Badge">`;
+            }
+            if (data.signaturePhoto) {
+                signaturePreview.innerHTML = `<img src="${data.signaturePhoto}" alt="Signature">`;
+            }
+        }
+    }
+
+    // Save images (convert to base64 and store)
+    function saveImages() {
+        let badgeData = null;
+        let signatureData = null;
+        let pending = 0;
+        let saved = false;
+
+        function trySave() {
+            if (pending === 0 && !saved) {
+                const existing = localStorage.getItem(ASSETS_KEY) ? JSON.parse(localStorage.getItem(ASSETS_KEY)) : {};
+                const toStore = {
+                    badgePhoto: badgeData !== null ? badgeData : existing.badgePhoto,
+                    signaturePhoto: signatureData !== null ? signatureData : existing.signaturePhoto
+                };
+                localStorage.setItem(ASSETS_KEY, JSON.stringify(toStore));
+                showToast('School assets saved successfully!');
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Images saved. They will appear on report cards.';
+                setTimeout(() => statusDiv.style.display = 'none', 4000);
+                saved = true;
+            }
+        }
+
+        if (badgeInput.files && badgeInput.files[0]) {
+            pending++;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                badgeData = e.target.result;
+                badgePreview.innerHTML = `<img src="${badgeData}" alt="School Badge">`;
+                pending--;
+                trySave();
+            };
+            reader.readAsDataURL(badgeInput.files[0]);
+        }
+        if (signatureInput.files && signatureInput.files[0]) {
+            pending++;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                signatureData = e.target.result;
+                signaturePreview.innerHTML = `<img src="${signatureData}" alt="Signature">`;
+                pending--;
+                trySave();
+            };
+            reader.readAsDataURL(signatureInput.files[0]);
+        }
+        if (pending === 0) {
+            // No new files selected – just keep existing assets
+            showToast('No new files selected. Nothing changed.', true);
+        }
+    }
+
+    // Preview on file selection (without saving yet)
+    badgeInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                badgePreview.innerHTML = `<img src="${ev.target.result}" alt="School Badge Preview">`;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+    signatureInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                signaturePreview.innerHTML = `<img src="${ev.target.result}" alt="Signature Preview">`;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    saveBtn.addEventListener('click', saveImages);
+
+    // Load existing images on page load
+    loadExisting();
+</script>
+</body>
+</html>

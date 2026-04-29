@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Admin Dashboard | BIM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .button-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.8rem;
+        }
+
+        /* base card style for all items (both links and non-links) */
+        .card-item {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.8rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-align: center;
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        /* real link styling (buttons) */
+        .action-link {
+            cursor: pointer;
+            background: white;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .action-link:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 35px -14px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+        .action-link:active {
+            transform: scale(0.97);
+        }
+
+        /* non-button items: no hover lift, no cursor pointer */
+        .non-btn {
+            cursor: default;
+        }
+        .non-btn:hover {
+            transform: none;
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-icon {
+            font-size: 2.5rem;
+            color: #2c6e9e;
+        }
+
+        .card-item span {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0a2540;
+            letter-spacing: -0.3px;
+        }
+
+        /* special style for BIM - TECHNOLOGIES (non-button) */
+        .bim-style {
+            background: linear-gradient(135deg, #11212e, #1c3d5c);
+        }
+        .bim-style .btn-icon {
+            color: #ffd966;
+        }
+        .bim-style span {
+            color: white;
+        }
+
+        /* ADMIN style (non-button) */
+        .admin-style {
+            background: #fafcff;
+            border: 1px solid #dce5ef;
+        }
+
+        @media (max-width: 680px) {
+            .button-container {
+                gap: 1rem;
+            }
+            .card-item span {
+                font-size: 1.2rem;
+            }
+            .btn-icon {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="button-container">
+    <!-- ADMIN (not a button, no link) -->
+    <div class="card-item non-btn admin-style">
+        <i class="fas fa-user-shield btn-icon"></i>
+        <span>ADMIN</span>
+    </div>
+
+    <!-- SUBJECT MANAGEMENT (link to subject-management.html) -->
+    <a href="subject-management.html" class="card-item action-link" data-action="SUBJECT MANAGEMENT">
+        <i class="fas fa-book-open btn-icon"></i>
+        <span>SUBJECT MANAGEMENT</span>
+    </a>
+
+    <!-- MARKLIST (link to marklist.html) -->
+    <a href="marklist.html" class="card-item action-link" data-action="MARKLIST">
+        <i class="fas fa-table-list btn-icon"></i>
+        <span>MARKLIST</span>
+    </a>
+    <a href="staff.html" class="card-item action-link" data-action="MARKLIST">
+        <i class="fas fa-users btn-icon"></i>
+        <span>STAFF</span>
+    </a>
+
+    <!-- REPORTS (link to reports.html) -->
+    <a href="reports.html" class="card-item action-link" data-action="REPORTS">
+        <i class="fas fa-chart-line btn-icon"></i>
+        <span>REPORTS</span>
+    </a>
+     <a href="upload.html" class="card-item action-link" data-action="REPORTS">
+        <i class="fas fa-signature btn-icon"></i>
+<i class="fas fa-shield-alt btn-icon"></i>
+        <span>BAGDE and SIGNATURE</span>
+    </a>
+
+    <!-- BIM - TECHNOLOGIES (not a button, no link) -->
+    <div class="card-item non-btn bim-style">
+        <i class="fas fa-cubes btn-icon"></i>
+        <span>BIM - TECHNOLOGIES</span>
+    </div>
+</div>
+</body>
+</html>

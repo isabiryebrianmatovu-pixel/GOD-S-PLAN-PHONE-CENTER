@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Add Student | BIM Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0a2540;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i { margin-right: 6px; }
+        .back-link:hover {
+            background: rgba(44, 110, 158, 0.2);
+            transform: translateY(-2px);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f4e79;
+        }
+        input, select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #cfdfed;
+            border-radius: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            background: white;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44, 110, 158, 0.2);
+        }
+        .subjects-section {
+            background: #f9fbfd;
+            border-radius: 1.4rem;
+            padding: 1.2rem;
+            margin: 1rem 0 1.5rem 0;
+            border: 1px solid #e2edf5;
+        }
+        .subjects-section h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #1f4e79;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #d4e2ef;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2c6e9e;
+            margin: 0;
+        }
+        .checkbox-item span { font-weight: 500; font-size: 0.85rem; }
+        .checkbox-item:hover { background: #eef4fa; border-color: #b9d3ec; }
+        .btn-primary {
+            background: #1f4e79;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover { background: #0f3b5e; transform: translateY(-2px); }
+        .btn-secondary {
+            background: #eef2f9;
+            border: 1px solid #cbdde9;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .cancel-btn { margin-left: 1rem; }
+        .table-wrapper { overflow-x: auto; margin-top: 1rem; }
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .students-table th, .students-table td {
+            padding: 0.9rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid #e2edf5;
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+        .students-table th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #1f4e79;
+        }
+        .action-btns { display: flex; gap: 8px; }
+        .edit-student, .delete-student {
+            background: none;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .edit-student { background: #eef2ff; color: #2563eb; }
+        .delete-student { background: #fff0f0; color: #dc2626; }
+        .empty-row td { text-align: center; padding: 2rem; color: #7c8ea0; }
+        .subjects-cell { max-width: 200px; white-space: normal; word-break: break-word; }
+        .warning-msg {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            color: #856404;
+            font-size: 0.85rem;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #1f2e3e;
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 35, 50, 0.92);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; }
+        @media (max-width: 680px) {
+            body { padding: 1rem; }
+            .checkbox-group { gap: 0.6rem; }
+            .action-btns { flex-direction: column; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-user-plus"></i> ADD STUDENT</h1>
+        <a href="marklist.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Marklist</a>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <h3 style="font-weight: 600;"><i class="fas fa-edit"></i> <span id="formTitle">Student Information</span></h3>
+            <button id="cancelEditBtn" class="btn-secondary cancel-btn" style="display: none;">Cancel Edit</button>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group"><label>NAME *</label><input type="text" id="studentName" placeholder="Full name"></div>
+            <div class="form-group"><label>COMBINATION</label><input type="text" id="combination" placeholder="e.g., PCM, PCB"></div>
+            <div class="form-group"><label>YEAR</label><input type="text" id="year" value="2026"></div>
+            <div class="form-group">
+                <label>TERM</label>
+                <select id="term"><option value="ONE">TERM ONE</option><option value="TWO">TERM TWO</option><option value="THREE">TERM THREE</option></select>
+            </div>
+            <div class="form-group"><label>CLASS</label><input type="text" id="className" placeholder="e.g., S.6"></div>
+            <div class="form-group"><label>SUPERADV.</label><input type="text" id="superadv" placeholder="Supervisor/Advisor"></div>
+        </div>
+
+        <div class="subjects-section">
+            <h3><i class="fas fa-book"></i> Subjects (from Subject Management):</h3>
+            <div id="subjectsWarning" class="warning-msg" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i> No subjects found. Please add subjects in <strong>Subject Management</strong> first.
+            </div>
+            <div class="checkbox-group" id="subjectsChecklist"></div>
+        </div>
+
+        <div><button id="saveStudentBtn" class="btn-primary"><i class="fas fa-save"></i> Save Student</button></div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem;"><i class="fas fa-database"></i> SAVED STUDENTS</h3>
+        <div class="table-wrapper">
+            <table class="students-table" id="studentsTable">
+                <thead><tr><th>NO.</th><th>NAME</th><th>CLASS</th><th>COMBINATION</th><th>TERM</th><th>YEAR</th><th>SUBJECTS</th><th>ACTIONS</th></tr></thead>
+                <tbody id="tableBody"><tr class="empty-row"><td colspan="8">No students added yet.</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="toastMsg" class="toast-msg"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
+
+<script>
+    // ---------- Data ----------
+    let students = [];
+    let editingId = null;
+    let availableSubjects = [];  // array of subject names from subject-management
+
+    // DOM elements
+    const studentNameInput = document.getElementById('studentName');
+    const combinationInput = document.getElementById('combination');
+    const yearInput = document.getElementById('year');
+    const termSelect = document.getElementById('term');
+    const classNameInput = document.getElementById('className');
+    const superadvInput = document.getElementById('superadv');
+    const saveBtn = document.getElementById('saveStudentBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const formTitleSpan = document.getElementById('formTitle');
+    const tableBody = document.getElementById('tableBody');
+    const subjectsChecklist = document.getElementById('subjectsChecklist');
+    const subjectsWarning = document.getElementById('subjectsWarning');
+
+    // Toast
+    const toastEl = document.getElementById('toastMsg');
+    const toastTextSpan = document.getElementById('toastText');
+    function showToast(msg, isError = false) {
+        toastTextSpan.innerText = msg;
+        toastEl.classList.add('show');
+        const icon = toastEl.querySelector('i');
+        icon.className = isError ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+        setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    // Load subjects from subject-management localStorage
+    function loadSubjectsFromManagement() {
+        const stored = localStorage.getItem('bim_subjects');
+        if (stored) {
+            const subjectsData = JSON.parse(stored);
+            // subjectsData is array of { id, name, papers }
+            availableSubjects = subjectsData.map(s => s.name).filter(name => name && name.trim() !== '');
+        } else {
+            availableSubjects = [];
+        }
+        renderSubjectCheckboxes();
+    }
+
+    // Render checkboxes based on availableSubjects
+    function renderSubjectCheckboxes() {
+        subjectsChecklist.innerHTML = '';
+        if (availableSubjects.length === 0) {
+            subjectsWarning.style.display = 'block';
+            subjectsChecklist.innerHTML = '<div style="padding: 0.5rem; color: #6c757d;">No subjects available. Please add subjects in Subject Management.</div>';
+            return;
+        }
+        subjectsWarning.style.display = 'none';
+        availableSubjects.forEach(subj => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = subj;
+            const span = document.createElement('span');
+            span.innerText = subj;
+            label.appendChild(cb);
+            label.appendChild(span);
+            subjectsChecklist.appendChild(label);
+        });
+    }
+
+    // Get selected subjects
+    function getSelectedSubjects() {
+        const checkboxes = subjectsChecklist.querySelectorAll('input[type="checkbox"]');
+        const selected = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) selected.push(cb.value);
+        });
+        return selected;
+    }
+
+    function setSelectedSubjects(subjectsArray) {
+        const checkboxes = subjectsChecklist.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            cb.checked = subjectsArray.includes(cb.value);
+        });
+    }
+
+    // Load students from localStorage
+    function loadStudents() {
+        const stored = localStorage.getItem('bim_students');
+        if (stored) students = JSON.parse(stored);
+        else students = [];
+        renderTable();
+    }
+
+    function saveToLocal() {
+        localStorage.setItem('bim_students', JSON.stringify(students));
+    }
+
+    function getFormData() {
+        return {
+            name: studentNameInput.value.trim(),
+            combination: combinationInput.value.trim(),
+            year: yearInput.value.trim(),
+            term: termSelect.value,
+            className: classNameInput.value.trim(),
+            superadv: superadvInput.value.trim(),
+            subjects: getSelectedSubjects()
+        };
+    }
+
+    function setFormData(student) {
+        studentNameInput.value = student.name || '';
+        combinationInput.value = student.combination || '';
+        yearInput.value = student.year || '2026';
+        termSelect.value = student.term || 'ONE';
+        classNameInput.value = student.className || '';
+        superadvInput.value = student.superadv || '';
+        setSelectedSubjects(student.subjects || []);
+    }
+
+    function resetForm() {
+        studentNameInput.value = '';
+        combinationInput.value = '';
+        yearInput.value = '2026';
+        termSelect.value = 'ONE';
+        classNameInput.value = '';
+        superadvInput.value = '';
+        document.querySelectorAll('#subjectsChecklist input[type="checkbox"]').forEach(cb => cb.checked = false);
+        editingId = null;
+        formTitleSpan.innerText = 'Student Information';
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Student';
+        cancelEditBtn.style.display = 'none';
+    }
+
+    function validateForm(data) {
+        if (!data.name) { showToast('Student name is required', true); return false; }
+        if (availableSubjects.length === 0) { showToast('No subjects available. Please add subjects in Subject Management first.', true); return false; }
+        return true;
+    }
+
+    function saveStudent() {
+        const formData = getFormData();
+        if (!validateForm(formData)) return;
+        if (editingId !== null) {
+            const index = students.findIndex(s => s.id === editingId);
+            if (index !== -1) {
+                students[index] = { ...students[index], ...formData, id: editingId };
+                saveToLocal();
+                showToast('Student updated');
+                resetForm();
+                renderTable();
+            } else showToast('Student not found', true);
+        } else {
+            const newStudent = { id: Date.now(), ...formData };
+            students.push(newStudent);
+            saveToLocal();
+            showToast('Student added');
+            resetForm();
+            renderTable();
+        }
+    }
+
+    function editStudent(id) {
+        const student = students.find(s => s.id === id);
+        if (student) {
+            setFormData(student);
+            editingId = id;
+            formTitleSpan.innerText = 'Edit Student';
+            saveBtn.innerHTML = '<i class="fas fa-update"></i> Update Student';
+            cancelEditBtn.style.display = 'inline-flex';
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function deleteStudent(id) {
+        if (confirm('Delete this student record?')) {
+            students = students.filter(s => s.id !== id);
+            saveToLocal();
+            if (editingId === id) resetForm();
+            renderTable();
+            showToast('Student deleted');
+        }
+    }
+
+    function renderTable() {
+        if (students.length === 0) {
+            tableBody.innerHTML = '<tr class="empty-row"><td colspan="8">No students added yet. Use the form above.</td></tr>';
+            return;
+        }
+        tableBody.innerHTML = '';
+        students.forEach((stu, idx) => {
+            const subjectsList = stu.subjects?.length ? stu.subjects.join(', ') : '—';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${idx + 1}</td>
+                <td><strong>${escapeHtml(stu.name)}</strong></td>
+                <td>${escapeHtml(stu.className || '-')}</td>
+                <td>${escapeHtml(stu.combination || '-')}</td>
+                <td>${escapeHtml(stu.term || '-')}</td>
+                <td>${escapeHtml(stu.year || '-')}</td>
+                <td class="subjects-cell">${escapeHtml(subjectsList)}</td>
+                <td class="action-btns">
+                    <button class="edit-student" data-id="${stu.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-student" data-id="${stu.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+        document.querySelectorAll('.edit-student').forEach(btn => {
+            btn.addEventListener('click', () => editStudent(parseInt(btn.dataset.id)));
+        });
+        document.querySelectorAll('.delete-student').forEach(btn => {
+            btn.addEventListener('click', () => deleteStudent(parseInt(btn.dataset.id)));
+        });
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    function cancelEdit() { resetForm(); renderTable(); showToast('Edit cancelled'); }
+
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSubjectsFromManagement();
+        loadStudents();
+        saveBtn.addEventListener('click', saveStudent);
+        cancelEditBtn.addEventListener('click', cancelEdit);
+        // Re-load subjects when page shows (in case user came from subject management)
+        window.addEventListener('focus', loadSubjectsFromManagement);
+    });
+</script>
+</body>
+</html>

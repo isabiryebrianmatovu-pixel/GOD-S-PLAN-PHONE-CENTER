@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>General Marklist | BIM Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0a2540;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i { margin-right: 6px; }
+        .back-link:hover { background: rgba(44, 110, 158, 0.2); transform: translateY(-2px); }
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            max-width: 300px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f4e79;
+        }
+        select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #cfdfed;
+            border-radius: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .info-msg {
+            background: #e6f4ea;
+            border-left: 4px solid #2e7d32;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1.2rem;
+            color: #1e4a2f;
+            font-size: 0.85rem;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .marks-table th, .marks-table td {
+            padding: 0.8rem 0.5rem;
+            border: 1px solid #dce5ef;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .marks-table th {
+            background: #f1f5f9;
+            font-weight: 700;
+            color: #1f4e79;
+        }
+        .student-name {
+            font-weight: 600;
+            text-align: left;
+            background: #fefce8;
+        }
+        .empty-row td {
+            text-align: center;
+            padding: 2rem;
+            color: #7c8ea0;
+        }
+        .subject-header {
+            background: #eef2ff;
+        }
+        .paper-col {
+            min-width: 70px;
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .marks-table th, .marks-table td { padding: 0.4rem 0.2rem; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-chart-line"></i> GENERAL MARKLIST</h1>
+        <a href="marklist.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Marklist</a>
+    </div>
+
+    <!-- Step 1: Choose Class -->
+    <div class="card">
+        <div class="form-group">
+            <label><i class="fas fa-school"></i> 1. Choose Class</label>
+            <select id="classSelect">
+                <option value="">-- Select Class --</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Step 2: Display Class Marklist -->
+    <div class="card" id="marklistCard" style="display: none;">
+        <h3 style="margin-bottom: 1rem;"><i class="fas fa-table-list"></i> Class Marklist</h3>
+        <div id="tableContainer">
+            <div class="info-msg" id="loadingMsg">Loading student data...</div>
+            <div class="table-wrapper" id="tableWrapper" style="display: none;">
+                <table class="marks-table" id="marksTable">
+                    <thead id="tableHeader"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- Data ----------
+    let students = [];           // from bim_students
+    let marksStore = [];         // from bim_subject_marks
+    let subjectsData = [];       // from bim_subjects: [{ id, name, papers }] 
+
+    // DOM elements
+    const classSelect = document.getElementById('classSelect');
+    const marklistCard = document.getElementById('marklistCard');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const tableHeader = document.getElementById('tableHeader');
+    const tableBody = document.getElementById('tableBody');
+    const loadingMsg = document.getElementById('loadingMsg');
+
+    // Active academic period (same as used in add-subject-marks)
+    const ACTIVE_YEAR = "2026";
+    const ACTIVE_TERM = "ONE";
+
+    // Load all data from localStorage
+    function loadData() {
+        const storedStudents = localStorage.getItem('bim_students');
+        students = storedStudents ? JSON.parse(storedStudents) : [];
+        
+        const storedMarks = localStorage.getItem('bim_subject_marks');
+        marksStore = storedMarks ? JSON.parse(storedMarks) : [];
+        
+        const storedSubjects = localStorage.getItem('bim_subjects');
+        if (storedSubjects) {
+            subjectsData = JSON.parse(storedSubjects);
+        } else {
+            subjectsData = [];
+        }
+        
+        // Migrate old marks format (paper1/paper2) to new paperMarks array
+        migrateMarksToPaperArray();
+        
+        populateClassDropdown();
+    }
+    
+    // Convert legacy marks (paper1, paper2) into paperMarks array based on subject papers
+    function migrateMarksToPaperArray() {
+        let changed = false;
+        marksStore = marksStore.map(entry => {
+            if (entry.paperMarks) return entry; // already new format
+            // find subject definition
+            const subjectDef = subjectsData.find(s => s.name === entry.subject);
+            const expectedPaperCount = subjectDef?.papers?.length || 2;
+            const paperMarks = [];
+            for (let i = 0; i < expectedPaperCount; i++) {
+                if (i === 0 && entry.paper1 !== undefined) paperMarks[i] = entry.paper1;
+                else if (i === 1 && entry.paper2 !== undefined) paperMarks[i] = entry.paper2;
+                else paperMarks[i] = null;
+            }
+            // Clean up old fields
+            const { paper1, paper2, ...rest } = entry;
+            changed = true;
+            return { ...rest, paperMarks };
+        });
+        if (changed) {
+            localStorage.setItem('bim_subject_marks', JSON.stringify(marksStore));
+        }
+    }
+    
+    // Get papers for a subject (from subject-management)
+    function getSubjectPapers(subjectName) {
+        const sub = subjectsData.find(s => s.name === subjectName);
+        return sub?.papers || ["Paper 1", "Paper 2"]; // fallback
+    }
+    
+    // Get all subjects that appear in a class (union of student.subjects + subjects with marks)
+    function getClassSubjects(className) {
+        const classStudents = students.filter(s => s.className === className);
+        const subjectSet = new Set();
+        classStudents.forEach(student => {
+            if (student.subjects && Array.isArray(student.subjects)) {
+                student.subjects.forEach(sub => subjectSet.add(sub));
+            }
+        });
+        // Also include subjects that have marks for these students
+        classStudents.forEach(student => {
+            const studentMarks = marksStore.filter(m => m.studentId === student.id && m.className === className);
+            studentMarks.forEach(m => subjectSet.add(m.subject));
+        });
+        return Array.from(subjectSet).sort();
+    }
+    
+    // Get mark entry for a student, subject, year, term
+    function getMarkEntry(studentId, subject) {
+        return marksStore.find(m => m.studentId === studentId && m.subject === subject && m.year === ACTIVE_YEAR && m.term === ACTIVE_TERM);
+    }
+    
+    // Render the full marklist for selected class
+    function renderMarklist(className) {
+        if (!className) {
+            marklistCard.style.display = 'none';
+            return;
+        }
+        
+        const classStudents = students.filter(s => s.className === className);
+        if (classStudents.length === 0) {
+            loadingMsg.innerHTML = `<i class="fas fa-info-circle"></i> No students found in class "${className}".`;
+            loadingMsg.style.display = 'block';
+            tableWrapper.style.display = 'none';
+            marklistCard.style.display = 'block';
+            return;
+        }
+        
+        const subjects = getClassSubjects(className);
+        if (subjects.length === 0) {
+            loadingMsg.innerHTML = `<i class="fas fa-exclamation-triangle"></i> No subjects assigned to any student in this class.`;
+            loadingMsg.style.display = 'block';
+            tableWrapper.style.display = 'none';
+            marklistCard.style.display = 'block';
+            return;
+        }
+        
+        // Build dynamic header: each subject has a colspan = number of its papers
+        let theadHtml = `<tr><th rowspan="2">No.</th><th rowspan="2">Student Name</th>`;
+        const subjectPaperCounts = [];
+        subjects.forEach(sub => {
+            const papers = getSubjectPapers(sub);
+            const colCount = papers.length;
+            subjectPaperCounts.push(colCount);
+            theadHtml += `<th colspan="${colCount}" class="subject-header">${escapeHtml(sub)}</th>`;
+        });
+        theadHtml += `</tr><tr>`;
+        subjects.forEach((sub, idx) => {
+            const papers = getSubjectPapers(sub);
+            for (let i = 0; i < papers.length; i++) {
+                theadHtml += `<th class="paper-col">${escapeHtml(papers[i])}</th>`;
+            }
+        });
+        theadHtml += `</tr>`;
+        tableHeader.innerHTML = theadHtml;
+        
+        // Build table body
+        let tbodyHtml = '';
+        classStudents.forEach((student, idx) => {
+            tbodyHtml += `<tr>`;
+            tbodyHtml += `<td>${idx + 1}</td>`;
+            tbodyHtml += `<td class="student-name">${escapeHtml(student.name)}</td>`;
+            subjects.forEach(subject => {
+                const markEntry = getMarkEntry(student.id, subject);
+                const paperMarks = markEntry?.paperMarks || [];
+                const papers = getSubjectPapers(subject);
+                for (let i = 0; i < papers.length; i++) {
+                    const mark = (paperMarks.length > i && paperMarks[i] !== null && paperMarks[i] !== undefined) ? paperMarks[i] : '-';
+                    tbodyHtml += `<td>${mark}</td>`;
+                }
+            });
+            tbodyHtml += `</tr>`;
+        });
+        tableBody.innerHTML = tbodyHtml;
+        
+        loadingMsg.style.display = 'none';
+        tableWrapper.style.display = 'block';
+        marklistCard.style.display = 'block';
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function populateClassDropdown() {
+        const classes = [...new Set(students.map(s => s.className).filter(c => c && c.trim()))];
+        classSelect.innerHTML = '<option value="">-- Select Class --</option>';
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls;
+            option.textContent = cls;
+            classSelect.appendChild(option);
+        });
+        if (classes.length === 0) {
+            classSelect.innerHTML = '<option value="">No classes found (add students first)</option>';
+        }
+        marklistCard.style.display = 'none';
+    }
+    
+    function onClassChange() {
+        const selectedClass = classSelect.value;
+        if (selectedClass) {
+            renderMarklist(selectedClass);
+        } else {
+            marklistCard.style.display = 'none';
+        }
+    }
+    
+    classSelect.addEventListener('change', onClassChange);
+    
+    // Initial load
+    loadData();
+    
+    // Listen for changes from other tabs
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'bim_students' || e.key === 'bim_subject_marks' || e.key === 'bim_subjects') {
+            loadData();
+            if (classSelect.value) {
+                renderMarklist(classSelect.value);
+            } else {
+                marklistCard.style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>

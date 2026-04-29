@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Marklist | BIM Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i {
+            margin-right: 6px;
+        }
+        .back-link:hover {
+            background: rgba(44, 110, 158, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin-top: 2rem;
+        }
+
+        .marklist-link {
+            background: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 2rem 1rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .marklist-link:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 35px -14px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+        }
+
+        .marklist-link:active {
+            transform: scale(0.97);
+        }
+
+        .btn-icon {
+            font-size: 2.5rem;
+            color: #2c6e9e;
+        }
+
+        .marklist-link span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0a2540;
+            letter-spacing: -0.3px;
+        }
+
+        .btn-add-student .btn-icon { color: #2c6e9e; }
+        .btn-add-subject .btn-icon { color: #2b7a4b; }
+        .btn-general-list .btn-icon { color: #c16e2e; }
+
+        @media (max-width: 680px) {
+            body { padding: 1rem; }
+            .marklist-link span { font-size: 1.1rem; }
+            .btn-icon { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-table-list"></i> MARK LIST</h1>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="button-grid">
+        <a href="add-student.html" class="marklist-link btn-add-student">
+            <i class="fas fa-user-plus btn-icon"></i>
+            <span>ADD STUDENT</span>
+        </a>
+        <a href="add-subject-marks.html" class="marklist-link btn-add-subject">
+            <i class="fas fa-pen-ruler btn-icon"></i>
+            <span>ADD SUBJECT MARKS</span>
+        </a>
+        <a href="general-mark-list.html" class="marklist-link btn-general-list">
+            <i class="fas fa-chart-simple btn-icon"></i>
+            <span>GENERAL MARK LIST</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>

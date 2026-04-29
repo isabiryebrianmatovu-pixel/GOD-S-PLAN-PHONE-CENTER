@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Teacher Management | BIM Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0a2540;
+            min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i { margin-right: 6px; }
+        .back-link:hover { background: rgba(44, 110, 158, 0.2); transform: translateY(-2px); }
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f4e79;
+        }
+        input, select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #cfdfed;
+            border-radius: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            background: white;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44, 110, 158, 0.2);
+        }
+        .btn-primary {
+            background: #1f4e79;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: #0f3b5e; transform: translateY(-2px); }
+        .btn-secondary {
+            background: #eef2f9;
+            border: 1px solid #cbdde9;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-danger-sm {
+            background: #fff0f0;
+            color: #b91c1c;
+            border: 1px solid #ffcdcd;
+            padding: 0.3rem 0.8rem;
+            border-radius: 1.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .assignment-group {
+            background: #f9fbfd;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2edf5;
+        }
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        .table-wrapper { overflow-x: auto; margin-top: 1rem; }
+        .teacher-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .teacher-table th, .teacher-table td {
+            padding: 0.9rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid #e2edf5;
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+        .teacher-table th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #1f4e79;
+        }
+        .action-btns { display: flex; gap: 8px; }
+        .edit-teacher, .delete-teacher {
+            background: none;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .edit-teacher { background: #eef2ff; color: #2563eb; }
+        .delete-teacher { background: #fff0f0; color: #dc2626; }
+        .empty-row td { text-align: center; padding: 2rem; color: #7c8ea0; }
+        .toast-msg {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #1f2e3e;
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 35, 50, 0.92);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; }
+        @media (max-width: 680px) {
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-chalkboard-user"></i> TEACHER MANAGEMENT</h1>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <!-- Teacher Form (Add / Edit) -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <h3 style="font-weight: 600;"><i class="fas fa-user-plus"></i> <span id="formTitle">Add Teacher</span></h3>
+            <button id="cancelEditBtn" class="btn-secondary" style="display: none;">Cancel Edit</button>
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Name *</label>
+                <input type="text" id="teacherName" placeholder="Full name">
+            </div>
+            <div class="form-group">
+                <label>Initials</label>
+                <input type="text" id="teacherInitials" placeholder="e.g., J.K.">
+            </div>
+        </div>
+
+        <!-- Dynamic Assignments (Class + Subject + Papers) -->
+        <div id="assignmentsContainer">
+            <label style="font-weight: 600;">Teaching Assignments (Class, Subject, Papers)</label>
+            <div id="assignmentList"></div>
+            <button type="button" id="addAssignmentBtn" class="btn-secondary" style="margin: 0.5rem 0;"><i class="fas fa-plus"></i> Add Assignment</button>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <button id="saveTeacherBtn" class="btn-primary"><i class="fas fa-save"></i> Save Teacher</button>
+        </div>
+    </div>
+
+    <!-- Saved Teachers Table -->
+    <div class="card">
+        <h3 style="margin-bottom: 1rem;"><i class="fas fa-users"></i> Saved Teachers</h3>
+        <div class="table-wrapper">
+            <table class="teacher-table" id="teachersTable">
+                <thead>
+                    <tr><th>No.</th><th>Name</th><th>Initials</th><th>Assignments (Class, Subject, Papers)</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="teachersTableBody">
+                    <tr class="empty-row"><td colspan="5">No teachers added yet. Use the form above.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
+
+<script>
+    // Storage keys
+    const TEACHERS_KEY = 'bim_teacher_assignments_v2';
+
+    let subjectsData = [];        // from bim_subjects: [{ id, name, papers }]
+    let teachers = [];
+    let editingTeacherId = null;
+
+    // DOM elements
+    const teacherName = document.getElementById('teacherName');
+    const teacherInitials = document.getElementById('teacherInitials');
+    const assignmentListDiv = document.getElementById('assignmentList');
+    const addAssignmentBtn = document.getElementById('addAssignmentBtn');
+    const saveTeacherBtn = document.getElementById('saveTeacherBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const formTitleSpan = document.getElementById('formTitle');
+    const teachersTableBody = document.getElementById('teachersTableBody');
+
+    // Toast
+    const toastEl = document.getElementById('toastMsg');
+    const toastTextSpan = document.getElementById('toastText');
+    function showToast(msg, isError = false) {
+        toastTextSpan.innerText = msg;
+        toastEl.classList.add('show');
+        const icon = toastEl.querySelector('i');
+        icon.className = isError ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+        setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    // Load subjects from subject-management
+    function loadSubjects() {
+        const stored = localStorage.getItem('bim_subjects');
+        if (stored) subjectsData = JSON.parse(stored);
+        else subjectsData = [];
+        renderAssignmentBlocks(); // refresh any existing assignments with new subject lists
+    }
+
+    // Assignment management
+    window.currentAssignments = [];  // each { classValue, subject, selectedPapers }
+
+    function createAssignmentBlock(assign, idx) {
+        const div = document.createElement('div');
+        div.className = 'assignment-group';
+        const header = document.createElement('div');
+        header.className = 'assignment-header';
+        const title = document.createElement('strong');
+        title.innerText = `Assignment ${idx+1}`;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn-danger-sm';
+        removeBtn.innerHTML = '<i class="fas fa-trash"></i> Remove';
+        removeBtn.onclick = () => { window.currentAssignments.splice(idx,1); renderAssignmentBlocks(); };
+        header.appendChild(title);
+        header.appendChild(removeBtn);
+        div.appendChild(header);
+
+        // Class input
+        const classDiv = document.createElement('div');
+        classDiv.className = 'form-group';
+        const classLabel = document.createElement('label');
+        classLabel.innerText = 'Class';
+        const classInput = document.createElement('input');
+        classInput.type = 'text';
+        classInput.placeholder = 'e.g., S.6';
+        classInput.value = assign.classValue || '';
+        classInput.addEventListener('input', (e) => {
+            window.currentAssignments[idx].classValue = e.target.value;
+        });
+        classDiv.appendChild(classLabel);
+        classDiv.appendChild(classInput);
+        div.appendChild(classDiv);
+
+        // Subject select
+        const subjDiv = document.createElement('div');
+        subjDiv.className = 'form-group';
+        const subjLabel = document.createElement('label');
+        subjLabel.innerText = 'Subject';
+        const subjSelect = document.createElement('select');
+        subjSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+        subjectsData.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub.name;
+            opt.textContent = sub.name;
+            if (assign.subject === sub.name) opt.selected = true;
+            subjSelect.appendChild(opt);
+        });
+        subjSelect.addEventListener('change', (e) => {
+            window.currentAssignments[idx].subject = e.target.value;
+            window.currentAssignments[idx].selectedPapers = [];
+            renderAssignmentBlocks();
+        });
+        subjDiv.appendChild(subjLabel);
+        subjDiv.appendChild(subjSelect);
+        div.appendChild(subjDiv);
+
+        // Papers multi-select
+        const papersDiv = document.createElement('div');
+        papersDiv.className = 'form-group';
+        const papersLabel = document.createElement('label');
+        papersLabel.innerText = 'Papers (Ctrl+Click for multiple)';
+        const papersSelect = document.createElement('select');
+        papersSelect.multiple = true;
+        papersSelect.size = 3;
+        function updatePapers() {
+            const subjName = subjSelect.value;
+            const subjObj = subjectsData.find(s => s.name === subjName);
+            const papers = subjObj?.papers || [];
+            papersSelect.innerHTML = '';
+            papers.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                if (window.currentAssignments[idx]?.selectedPapers?.includes(p)) opt.selected = true;
+                papersSelect.appendChild(opt);
+            });
+            if (papers.length === 0) {
+                const opt = document.createElement('option');
+                opt.disabled = true;
+                opt.textContent = 'No papers defined for this subject';
+                papersSelect.appendChild(opt);
+            }
+        }
+        updatePapers();
+        papersSelect.addEventListener('change', () => {
+            window.currentAssignments[idx].selectedPapers = Array.from(papersSelect.selectedOptions).map(o => o.value);
+        });
+        papersDiv.appendChild(papersLabel);
+        papersDiv.appendChild(papersSelect);
+        div.appendChild(papersDiv);
+
+        return div;
+    }
+
+    function renderAssignmentBlocks() {
+        assignmentListDiv.innerHTML = '';
+        if (window.currentAssignments.length === 0) {
+            const hint = document.createElement('div');
+            hint.style.padding = '0.5rem';
+            hint.style.color = '#7c8ea0';
+            hint.innerText = 'No assignments yet. Click "Add Assignment" to add.';
+            assignmentListDiv.appendChild(hint);
+            return;
+        }
+        window.currentAssignments.forEach((assign, idx) => {
+            const block = createAssignmentBlock(assign, idx);
+            assignmentListDiv.appendChild(block);
+        });
+    }
+
+    function addAssignment() {
+        window.currentAssignments.push({ classValue: '', subject: '', selectedPapers: [] });
+        renderAssignmentBlocks();
+    }
+
+    function getTeacherAssignments() {
+        return window.currentAssignments
+            .filter(a => a.classValue && a.subject && a.selectedPapers.length > 0)
+            .map(a => ({
+                class: a.classValue,
+                subject: a.subject,
+                papers: a.selectedPapers
+            }));
+    }
+
+    function resetTeacherForm() {
+        teacherName.value = '';
+        teacherInitials.value = '';
+        window.currentAssignments = [];
+        renderAssignmentBlocks();
+        editingTeacherId = null;
+        formTitleSpan.innerText = 'Add Teacher';
+        saveTeacherBtn.innerHTML = '<i class="fas fa-save"></i> Save Teacher';
+        cancelEditBtn.style.display = 'none';
+    }
+
+    function loadTeachers() {
+        const stored = localStorage.getItem(TEACHERS_KEY);
+        teachers = stored ? JSON.parse(stored) : [];
+        renderTeachersTable();
+    }
+
+    function saveTeachersToLocal() {
+        localStorage.setItem(TEACHERS_KEY, JSON.stringify(teachers));
+    }
+
+    function saveTeacher() {
+        const name = teacherName.value.trim();
+        if (!name) { showToast('Teacher name is required', true); return; }
+        const assignments = getTeacherAssignments();
+        if (assignments.length === 0) { showToast('Add at least one valid assignment (class, subject, paper)', true); return; }
+        const teacherData = {
+            id: editingTeacherId || Date.now(),
+            name,
+            initials: teacherInitials.value.trim(),
+            assignments
+        };
+        if (editingTeacherId !== null) {
+            const idx = teachers.findIndex(t => t.id === editingTeacherId);
+            if (idx !== -1) teachers[idx] = teacherData;
+            showToast('Teacher updated');
+        } else {
+            teachers.push(teacherData);
+            showToast('Teacher added');
+        }
+        saveTeachersToLocal();
+        resetTeacherForm();
+        renderTeachersTable();
+    }
+
+    function editTeacher(id) {
+        const t = teachers.find(t => t.id === id);
+        if (!t) return;
+        teacherName.value = t.name;
+        teacherInitials.value = t.initials || '';
+        window.currentAssignments = (t.assignments || []).map(a => ({
+            classValue: a.class,
+            subject: a.subject,
+            selectedPapers: a.papers
+        }));
+        renderAssignmentBlocks();
+        editingTeacherId = t.id;
+        formTitleSpan.innerText = 'Edit Teacher';
+        saveTeacherBtn.innerHTML = '<i class="fas fa-update"></i> Update Teacher';
+        cancelEditBtn.style.display = 'inline-flex';
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function deleteTeacher(id) {
+        if (confirm('Delete this teacher permanently?')) {
+            teachers = teachers.filter(t => t.id !== id);
+            saveTeachersToLocal();
+            if (editingTeacherId === id) resetTeacherForm();
+            renderTeachersTable();
+            showToast('Teacher deleted');
+        }
+    }
+
+    function renderTeachersTable() {
+        if (teachers.length === 0) {
+            teachersTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">No teachers added yet. Use the form above.</td></tr>';
+            return;
+        }
+        teachersTableBody.innerHTML = '';
+        teachers.forEach((t, idx) => {
+            const assignmentsSummary = t.assignments.map(a => {
+                const papersStr = a.papers.join(', ');
+                return `${a.class}: ${a.subject} (${papersStr})`;
+            }).join('; ');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${idx+1}</td>
+                <td>${escapeHtml(t.name)}</strong>${t.initials ? `<br><small>${escapeHtml(t.initials)}</small>` : ''}</td>
+                <td>${escapeHtml(t.initials || '-')}</td>
+                <td>${assignmentsSummary || '—'}</td>
+                <td class="action-btns">
+                    <button class="edit-teacher" data-id="${t.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-teacher" data-id="${t.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                </td>
+            `;
+            teachersTableBody.appendChild(row);
+        });
+        document.querySelectorAll('.edit-teacher').forEach(btn => btn.addEventListener('click', (e) => editTeacher(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.delete-teacher').forEach(btn => btn.addEventListener('click', (e) => deleteTeacher(parseInt(btn.dataset.id))));
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    // Event listeners
+    addAssignmentBtn.addEventListener('click', addAssignment);
+    saveTeacherBtn.addEventListener('click', saveTeacher);
+    cancelEditBtn.addEventListener('click', resetTeacherForm);
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSubjects();
+        loadTeachers();
+        window.currentAssignments = [];
+        renderAssignmentBlocks();
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'bim_subjects') loadSubjects();
+            if (e.key === TEACHERS_KEY) loadTeachers();
+        });
+    });
+</script>
+</body>
+</html>

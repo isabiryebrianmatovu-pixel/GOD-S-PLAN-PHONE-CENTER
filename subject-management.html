@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Subject Management | BIM Admin</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0a2540;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-link {
+            background: rgba(44, 110, 158, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            color: #1e4a76;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            border: 1px solid rgba(44, 110, 158, 0.25);
+        }
+        .back-link i {
+            margin-right: 6px;
+        }
+        .back-link:hover {
+            background: rgba(44, 110, 158, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* card style */
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1f4e79;
+            font-size: 0.9rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid #cfdfed;
+            border-radius: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            background: white;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44, 110, 158, 0.2);
+        }
+
+        /* papers checklist */
+        .papers-group {
+            background: #f9fbfd;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid #e2edf5;
+        }
+        .checkbox-list {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            background: white;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #d4e2ef;
+            transition: all 0.15s;
+        }
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2c6e9e;
+        }
+        .checkbox-item span {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .checkbox-item:hover {
+            background: #eef4fa;
+            border-color: #b9d3ec;
+        }
+
+        .btn-primary {
+            background: #1f4e79;
+            border: none;
+            padding: 0.85rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover {
+            background: #0f3b5e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -6px rgba(0,0,0,0.15);
+        }
+        .btn-secondary {
+            background: #eef2f9;
+            border: 1px solid #cbdde9;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* table styles */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .subjects-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .subjects-table th, .subjects-table td {
+            padding: 1rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #e2edf5;
+            vertical-align: middle;
+        }
+        .subjects-table th {
+            font-weight: 700;
+            color: #1f4e79;
+            background: #f8fafc;
+            border-radius: 1rem 1rem 0 0;
+            font-size: 0.85rem;
+        }
+        .subjects-table tr:last-child td {
+            border-bottom: none;
+        }
+        .subject-name-cell {
+            font-weight: 600;
+        }
+        .papers-cell {
+            font-size: 0.85rem;
+            color: #2c5a7a;
+        }
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.1s;
+            font-family: 'Inter', sans-serif;
+        }
+        .edit-btn {
+            background: #eef2ff;
+            color: #2563eb;
+            border: 1px solid #cbddf5;
+        }
+        .edit-btn:hover {
+            background: #e0e9ff;
+            transform: scale(0.96);
+        }
+        .delete-btn {
+            background: #fff0f0;
+            color: #dc2626;
+            border: 1px solid #ffcdcd;
+        }
+        .delete-btn:hover {
+            background: #ffe0e0;
+            transform: scale(0.96);
+        }
+        .empty-row td {
+            text-align: center;
+            padding: 2rem;
+            color: #7c8ea0;
+            font-style: italic;
+        }
+
+        .cancel-update {
+            margin-left: 1rem;
+            background: #eef2f9;
+            color: #4b6b8f;
+        }
+
+        /* status message */
+        .toast-msg {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #1f2e3e;
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 35, 50, 0.92);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .toast-msg.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.2rem;
+            }
+            .checkbox-list {
+                gap: 0.8rem;
+            }
+            .action-btns {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-book-open"></i> SUBJECT MANAGEMENT</h1>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <!-- Note: admin-dashboard.html is the previous main page. If name differs, adjust. -->
+    </div>
+
+    <!-- ADD / EDIT subject card -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
+            <h3 style="font-weight: 600; color: #0f3b5e;"><i class="fas fa-pen-alt"></i> <span id="formTitle">Add New Subject</span></h3>
+            <button id="cancelEditBtn" class="btn-secondary cancel-update" style="display: none;">Cancel Edit</button>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-tag"></i> Subject Name:</label>
+            <input type="text" id="subjectName" placeholder="e.g., BIM Fundamentals, Structural Design" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-layer-group"></i> Name of papers (select at least one):</label>
+            <div class="papers-group">
+                <div class="checkbox-list" id="papersChecklist">
+                    <!-- dynamic from JS but preset Paper 1,2,3 -->
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.2rem;">
+            <button id="addSubjectBtn" class="btn-primary"><i class="fas fa-plus-circle"></i> Add subject</button>
+            <span id="editModeHint" style="font-size: 0.75rem; color: #5f7f9e;"></span>
+        </div>
+    </div>
+
+    <!-- Saved subjects table -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.2rem; font-weight: 600;"><i class="fas fa-database"></i> Saved subjects</h3>
+        <div class="table-wrapper">
+            <table class="subjects-table" id="subjectsTable">
+                <thead>
+                    <tr>
+                        <th>Subject Name</th>
+                        <th>Papers</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr class="empty-row"><td colspan="3">No subjects added yet. Use the form above.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg"><i class="fas fa-check-circle"></i> <span id="toastText">message</span></div>
+
+<script>
+    // ---------- Configuration ----------
+    const PAPER_OPTIONS = ["Paper 1", "Paper 2", "Paper 3"];
+    
+    // Data model: each subject = { id, name, papers: array of strings (paper names) }
+    let subjects = [];
+    let editingId = null;   // if not null, we are in edit mode
+
+    // DOM elements
+    const subjectNameInput = document.getElementById('subjectName');
+    const papersContainer = document.getElementById('papersChecklist');
+    const addBtn = document.getElementById('addSubjectBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const formTitleSpan = document.getElementById('formTitle');
+    const editModeHint = document.getElementById('editModeHint');
+    const tableBody = document.getElementById('tableBody');
+
+    // Toast
+    const toastEl = document.getElementById('toastMsg');
+    const toastTextSpan = document.getElementById('toastText');
+    function showToast(message, isError = false) {
+        toastTextSpan.innerText = message;
+        toastEl.classList.add('show');
+        const iconSpan = toastEl.querySelector('i');
+        if (isError) {
+            iconSpan.className = 'fas fa-exclamation-triangle';
+        } else {
+            iconSpan.className = 'fas fa-check-circle';
+        }
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+            setTimeout(() => {
+                if (!toastEl.classList.contains('show')) iconSpan.className = 'fas fa-check-circle';
+            }, 200);
+        }, 2600);
+    }
+
+    // Load from localStorage
+    function loadSubjects() {
+        const stored = localStorage.getItem('bim_subjects');
+        if (stored) {
+            subjects = JSON.parse(stored);
+        } else {
+            // Sample initial data for demonstration (optional but matches template)
+            subjects = [
+                { id: Date.now() + 1, name: "BIM Modelling", papers: ["Paper 1", "Paper 2"] },
+                { id: Date.now() + 2, name: "Construction Management", papers: ["Paper 3"] }
+            ];
+            saveToLocal();
+        }
+        renderTable();
+    }
+
+    function saveToLocal() {
+        localStorage.setItem('bim_subjects', JSON.stringify(subjects));
+    }
+
+    // render checkboxes dynamically based on PAPER_OPTIONS
+    function renderPaperCheckboxes() {
+        papersContainer.innerHTML = '';
+        PAPER_OPTIONS.forEach(paper => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = paper;
+            cb.className = 'paper-cb';
+            const span = document.createElement('span');
+            span.innerText = paper;
+            label.appendChild(cb);
+            label.appendChild(span);
+            papersContainer.appendChild(label);
+        });
+    }
+
+    // get selected papers from checkboxes (array of paper names)
+    function getSelectedPapers() {
+        const checkboxes = document.querySelectorAll('.paper-cb');
+        const selected = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) selected.push(cb.value);
+        });
+        return selected;
+    }
+
+    // set checkbox states according to papers array
+    function setSelectedPapers(papersArray) {
+        const checkboxes = document.querySelectorAll('.paper-cb');
+        checkboxes.forEach(cb => {
+            cb.checked = papersArray.includes(cb.value);
+        });
+    }
+
+    // clear form and reset edit mode
+    function resetForm() {
+        subjectNameInput.value = '';
+        const allCbs = document.querySelectorAll('.paper-cb');
+        allCbs.forEach(cb => cb.checked = false);
+        editingId = null;
+        formTitleSpan.innerText = 'Add New Subject';
+        addBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add subject';
+        cancelEditBtn.style.display = 'none';
+        editModeHint.innerText = '';
+        // remove any temporary styling
+    }
+
+    // enter edit mode
+    function startEdit(subject) {
+        editingId = subject.id;
+        subjectNameInput.value = subject.name;
+        setSelectedPapers(subject.papers);
+        formTitleSpan.innerText = 'Edit Subject';
+        addBtn.innerHTML = '<i class="fas fa-save"></i> Update subject';
+        cancelEditBtn.style.display = 'inline-flex';
+        editModeHint.innerText = 'Editing: ' + subject.name;
+        // scroll to form
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Add or Update subject
+    function handleAddOrUpdate() {
+        const subjectName = subjectNameInput.value.trim();
+        if (subjectName === '') {
+            showToast('Subject name cannot be empty', true);
+            return;
+        }
+        const selectedPapers = getSelectedPapers();
+        if (selectedPapers.length === 0) {
+            showToast('Please select at least one paper', true);
+            return;
+        }
+
+        if (editingId !== null) {
+            // UPDATE existing
+            const index = subjects.findIndex(s => s.id === editingId);
+            if (index !== -1) {
+                // check duplicate name excluding current id
+                const duplicate = subjects.some(s => s.id !== editingId && s.name.toLowerCase() === subjectName.toLowerCase());
+                if (duplicate) {
+                    showToast('A subject with this name already exists', true);
+                    return;
+                }
+                subjects[index] = { ...subjects[index], name: subjectName, papers: selectedPapers };
+                saveToLocal();
+                showToast('Subject updated successfully');
+            } else {
+                showToast('Error: subject not found', true);
+                resetForm();
+            }
+            resetForm();
+        } else {
+            // ADD new
+            const exists = subjects.some(s => s.name.toLowerCase() === subjectName.toLowerCase());
+            if (exists) {
+                showToast('Subject name already exists', true);
+                return;
+            }
+            const newSubject = {
+                id: Date.now(),
+                name: subjectName,
+                papers: selectedPapers
+            };
+            subjects.push(newSubject);
+            saveToLocal();
+            showToast('Subject added successfully');
+            resetForm();
+        }
+        renderTable();
+    }
+
+    // delete subject
+    function deleteSubject(id) {
+        if (confirm('Are you sure you want to delete this subject? This action cannot be undone.')) {
+            subjects = subjects.filter(s => s.id !== id);
+            saveToLocal();
+            if (editingId === id) resetForm();
+            renderTable();
+            showToast('Subject deleted');
+        }
+    }
+
+    // render table body
+    function renderTable() {
+        if (!tableBody) return;
+        if (subjects.length === 0) {
+            tableBody.innerHTML = '<tr class="empty-row"><td colspan="3">No subjects added yet. Use the form above.</td></tr>';
+            return;
+        }
+        tableBody.innerHTML = '';
+        subjects.forEach(sub => {
+            const row = document.createElement('tr');
+            // Subject name cell
+            const nameCell = document.createElement('td');
+            nameCell.className = 'subject-name-cell';
+            nameCell.innerText = sub.name;
+            // Papers cell (join with comma)
+            const papersCell = document.createElement('td');
+            papersCell.className = 'papers-cell';
+            papersCell.innerText = sub.papers.length ? sub.papers.join(', ') : 'None';
+            // Actions cell
+            const actionsCell = document.createElement('td');
+            const btnWrapper = document.createElement('div');
+            btnWrapper.className = 'action-btns';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-btn';
+            editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startEdit(sub);
+            });
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteSubject(sub.id);
+            });
+            
+            btnWrapper.appendChild(editBtn);
+            btnWrapper.appendChild(deleteBtn);
+            actionsCell.appendChild(btnWrapper);
+            
+            row.appendChild(nameCell);
+            row.appendChild(papersCell);
+            row.appendChild(actionsCell);
+            tableBody.appendChild(row);
+        });
+    }
+
+    // cancel edit
+    function cancelEdit() {
+        resetForm();
+        renderTable(); // just refresh visual (no data change needed)
+        showToast('Edit cancelled');
+    }
+
+    // event listeners & initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        renderPaperCheckboxes();   // build checkboxes (Paper 1,2,3)
+        loadSubjects();            // load from localStorage, render table
+        
+        addBtn.addEventListener('click', handleAddOrUpdate);
+        cancelEditBtn.addEventListener('click', cancelEdit);
+        
+        // optional: if back link uses relative path, but we keep standard behavior
+        const backLink = document.querySelector('.back-link');
+        if (backLink) {
+            backLink.addEventListener('click', (e) => {
+                // if there is a saved state, no extra action; just navigate.
+                // we allow regular link behavior.
+            });
+        }
+    });
+</script>
+</body>
+</html>
